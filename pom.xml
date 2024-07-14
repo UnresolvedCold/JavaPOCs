@@ -10,6 +10,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>DesignPatterns</module>
+        <module>Algorithms</module>
+        <module>POCs</module>
     </modules>
 
     <properties>
