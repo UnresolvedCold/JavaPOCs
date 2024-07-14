@@ -11,14 +11,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MarkdownToPropertiesConverter {
   public static void main(String[] args) {
-    String filePath = "application.properties.md";
+    String filePath = "application.properties.md";  // Replace with your file name
     String markdown = readFileFromResources(filePath);
+
+    // Configure the parser
     MutableDataSet options = new MutableDataSet();
     Parser parser = Parser.builder(options).build();
+
+    // Parse the markdown
     Node document = parser.parse(markdown);
+
+    // Extract application properties
     Map<String, String> properties = extractProperties(document);
 
     // Print properties to verify
@@ -44,6 +52,7 @@ public class MarkdownToPropertiesConverter {
     Node current = document.getFirstChild();
 
     Stack<String> headingStack = new Stack<>();
+    Pattern pattern = Pattern.compile("\\$\\{([^:}]+):([^}]+)\\}");
 
     while (current != null) {
       if (current instanceof Heading) {
@@ -62,6 +71,13 @@ public class MarkdownToPropertiesConverter {
         String fullKey = String.join(".", headingStack);
 
         if (!value.isEmpty()) {
+          Matcher matcher = pattern.matcher(value);
+          if (matcher.find()) {
+            String envVar = matcher.group(1);
+            String defaultValue = matcher.group(2);
+            String envValue = System.getenv(envVar);
+            value = envValue != null ? envValue : defaultValue;
+          }
           properties.put(fullKey, value);
         }
       }
