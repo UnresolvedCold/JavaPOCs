@@ -66,7 +66,7 @@ public class MarkdownToPropertiesConverter {
         while (!headingStack.isEmpty() && headingStack.size() >= heading.getLevel()) {
           headingStack.pop();
         }
-        headingStack.push(key);
+        headingStack.push(key.toLowerCase());
 
         String fullKey = String.join(".", headingStack);
 
